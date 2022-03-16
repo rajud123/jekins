@@ -1,0 +1,359 @@
+Jenkins is a Java application, since java is a platform independent language so, jenkins run on any  platform(we can use it the same way on windows, linux, mac and  others).
+
+What is the use of Jenkins.:
+jenkins is used for continuous integration and continuous delivery.
+
+Dev works on
+his machine
+_________                                      ______________                       _____________
+|                  |checks in code to repo  |Source control    |                     |                         |
+| Developer |--------------------------> | (GIT/SVN)          |-grab code->|    JENKINS      |
+|_________|                                     |______________|                    |____________ |                                                                                                                       |
+                                                                                                                   |
+                                                                                                                   |
+                                                                                                                   | builds
+                                                                                                                   |
+                          ____________________________________________ |                                          |
+ 	        |
+          _______ |________                   
+          |Build atrifacts(exe, |
+          |website,app)           |
+          |_______________|                                                                                           
+                                                                                                                   
+whenever jenkins grabs code from git it will build the code if the build is succesful without any issues it can perform some post build actions which we configured like perforamance test etc and deploys to live server and sends a report back.
+If there is some issue in the build with the new code changes wont reflected we will get a report back
+
+
+Step 1 : Download Jenkins war file - https://jenkins.io/
+Step 2 : Place the war file into any location on your system
+Step 3 : goto command prompt (windows) | terminal (mac)
+   - goto folder where jenkins.war is
+   - java -jar jenkins.war
+Step 4 : goto browser - http://localhost:8080 (Jenkins window should show up)
+Step 5 : install required plugins
+Step 6 : get started with Jenkins 
+  
+How to setup jenkins on tomcat :
+----==========-------------------                                                                                  
+We can run jenkins on its own standalone server jetty(servlet container) but if we deploy jenkins on tomcat we can run our application and jenkins on same server 
+                              
+Pre-requisite
+***Tomcat 5 or above***
+***java(7 or above) should be available***
+(https://www.youtube.com/watch?v=FqpmH...)
+
+Step 1 : Download Tomcat 
+
+Step 2 : Unzip and place tomcat folder at any location
+
+Step 3 : Copy/Place the jenkins.war file inside tomcat/webapps folder
+
+Step 4 : Goto commandpromt (cmd) - windows  |  terminal - mac
+  - goto tomcat/bin directory
+  - make all files executable : chmod +x *.sh
+
+In case of windows this command will not work. This step might not be needed if you are on windows. Else you can right click on the file/folder goto security tab and change the permissions.
+
+Can watch -   
+TOMCAT - How to install and run on Windows | Change Port | Run app
+https://youtu.be/ZIIkrn6LHW0?list=PLh...
+
+Step 5 : Start Tomcat from bin folder: ./startup.sh
+  (to shutdown tomcat : ./shutdown.sh)
+
+Step 6 : verify if tomcat started : browser - http://localhost:8080
+
+Step 7 : verify if jenkins is running on tomcat : http://localhost:8080/jenkins
+
+*** To start jenkins (standalone) on a diff port***
+java -jar jenkins.war - - httpPort=9090
+
+How to change Home Directory of jenkins:
+---------------==========-------------===---
+Home directory is the place where all the log files and jenkin jobs will be created.
+->The reason for changing the home directory is  jenkins will create lot of files which will consume lot of memory in current directory where jenkins is in so, if we want to change the directory to a directory where has suffucient storage we can go for changing the home directory.
+
+step 1: check your current home directory by going to Manage Jenkins section and configure systems.
+step 2: create a new folder which will be your new home directory.
+step 3: copy all the files from .jenkins folder to your new directory.
+step 4: we have to change the environment variables JENKINS_HOME  and set to            new dir by setting system varaible JENKINS_HOME with new home directory.
+step 5: stop and start jenkins using cmd or from jenkins interface http://localhost:8080/restart
+http://localhost:8080/systeminfo - to see all environment variables
+
+
+HOW to use CLI?(using CLI over jenkins interface) :
+------------------------------------===------==========
+->Its easier
+->Its faster
+->Good memeory management(efficient)
+->Continous Integration
+
+step 1: start jenkins
+	go to folder where jenkins.war is present open cmd from there
+	java -jar jenkins.war
+step 2: go to manage jenkins -> configure global security - enable security(check box)
+step 3: go to http://localhost:8080/cli/
+step 4: download jenkins-cli.jar place at any location you want to run from.
+step 5: test the jar from the location it is.
+	java -jar jenkins-cli.jar - s http://localhost:8080/ help
+	enter pass pharase from admin sections configure which is the SSH key
+ 	for other operatrions if some error like anonymous is missing the permission.
+	we can go to manage jenkins->configure global security-> under authorization check any one can do anything
+
+
+How to create manage and assign roles:
+---------------------------=======----===
+step 1: create new roles 
+	run jenkins from the jenkind.war location
+	java -jar jenkins.war
+	login as admin into jenkins
+	->login(with admin user and password(get password from jenkins home directory in the initialAdminPassword.txt file )) 
+
+step 2: go to manage jenkins -> go to manage users section -> create user
+	To configure something or modify user details we can configure by clicking on configure option in the dropdown to the username
+
+step 3: create and manage user roles:
+	to manage roles cinstall roles strategy plugin by downloading from browser.
+	this will download a .hpl file
+	After download paste the .hpl file inside plugins folder inside jenkins home directory and restart jenkins
+step 4: login as admin 
+	go to manage jenkins -> configure global settings -> make sure enable security is checked and under Authorization section check role based startegy(which comes only after role based startegy plugin installtion and restart of jenkins)
+step 5 : assign roles :
+	1. create roles
+	go to manage jenkins -> manage assign roles -> manage roles -> 
+there are three types of roles 
+	i. global roles
+	ii. project roles
+	iii.slave roles
+	
+	2.assign roles
+	go to manage jenkins -> manage assign roles -> assign roles ->
+assign roles to users
+*(to create project home -> add item)
+
+Basic configurations :
+--==========-------
+step 1: Mange jenkins -> Configure System
+step 2: get common understading of common and basic configurations.
+no of executors : It specifies the number of parallel jobs/builds that the partcular jenkins instance can run.
+Labels :  To know about labels we should know about nodes 
+            A node(master node) can have multiple sub nodes named as slave nodes running a job distrubutively
+Note : A node is generally a new machine
+	A job can be excuted by multiple noes which are under same label
+so while configuring a job we can have a label where that label can have one or more nodes and while configuring node we can add a node for a label.
+
+quite period: It is the time gap(sleep time) between the build trigger of a job and the  actual job take place.
+
+SCM checkout retry count : it is number of retries that jenkins should make when a particular pull for the code is failed after build
+
+Restrict project naming : it will restrict the naming of a job which should startr with some naming criteria.
+
+Global properties :
+	Environment variables : we can use these variables globally in all the jobs. to use these variables ${key}
+	Tool Locations : if we want some tool locations to be accessed by all the jobs.
+
+Jenkins location : location(URL) of jenkins.
+(to know your ip type ipconfig in cmd)
+
+System Admin e-mail address : admin email
+
+getting started with JOBS :
+-----------========-==----
+step 1: go to jenkins -> new item -> give details
+->Enter the item name 
+->choose the type of project(free-style/multi-configuraration project)
+-> OK <-
+After clicking on OK we will be taken to a page where we configure details about the project(there are 5 sections in this page).
+
+section-1 General :
+Description : Description about the project.
+
+section-2 Source code management :
+If we want to attach any source code repo we  can add in this section which will appear when add certain plugin.
+
+section-3 Build triggers :
+This section tells about when a build should be triggered.
+
+we can either build periodically by giving some cron expressions or
+build after a certain proejct built or
+build the project remotely(from other system with the ip and token) or  
+by poll SCM
+
+we can choose any of the way to shedule the job.
+
+section-4 Build:
+this is for the command section like a windows batch command or a shell commands or a maven command or if you have any plugin installed those plugin related commands for this job.
+
+section-5 Add post-build action:
+this section tells about if you want post build some actions after this build we can configure those here like performance test or you want to send some report notification.
+
+Under the projects we have multiple fields like below:
+
+S-> repersents the status of the project (grey means the project is not build yet | red means the build is failed | blue means build is succes)
+W-> represents the whether status of the project which is about the last 5 runs/builds of the project(Sunny(Sunny) means last 5 builds are succes | cloudy sun(Partially Sunny) means one of the last 5 builds is failed | cloudy(cloudy) means 2 of the last 5 builds are failed | rainy(Raining) cloud means 3 of the last 5 builds failed | Storms(Storm) means 4 of the last 5 builds are failed)
+Name -> Name of the project 
+Last success->Time the last success build happened
+Last failure -> Time the last failure build occured
+Last Duration -> duration of the last build
+
+Chaining job executions :
+we can configure this from the build triggres and build sections
+
+Jenkins Integration with GIT :
+============-=-=-=-====
+step 1: create a Java Application.
+step 2: create a jenkins job to run java program.
+	start jekins from jenkins.war location
+	java -jar jenkins.war
+ to create the job:
+	Add item -> name the project -> under build for now give windows cmd
+	-> give the commands to run our java location
+ 	eg : go to file location cd location
+			javac Test.java
+			java Test
+	apply save
+	build
+
+step 3: add project to git and GitHub
+	create a repo in git hub
+	and initalise the project folder as local git repo
+	do git status and files to staging area git add .
+	then commit files to local repo git commit -m "message"
+	then  git remote add origin git-repo-url
+	git push -u origin master
+
+	make sure you have git plugin installed, if you dont have git plugin 
+	go to manage jenkins -> manage plugins -> in avilable section search by 	git plugin and download
+
+	After go to project -> configure -> under version control select git and 	specify the git url and schedule the job with some schedule apply save
+	
+	make some changes in file(java application) to trigger build and again push the changes to complete
+
+How to add guthub credentials in Jenkins  :
+-------------=============-====-======
+to add credentials to Jenkins go to credentials section which comes when you have credentials plugin installed.
+-> Go to credentials -> under sscoped to Jenkins click Jenkins -> Global credentials
+-> add credentials (on click a window will pop up)
+In that sepcify the scpoe the accesibility level of the credentials, username, password, ID will be auto generated and Description you can give something for your understanding click OK.
+	If you want to create any job and you want to add credentials of your git account under source code management section we can add it so whenever we trigger the build the project will be cloned from git.
+
+Using CATLIGHT(status notifier for jenkins):
+=======-===========-----------========
+CATLIGHT will notify about build statuses and any changes like bugs and tasks CATLIGHT makes it handy by displaying notifications on desktop without going to dashboard everytime about any starts failures and success messages
+
+for first go to CATLIGHT website catlight.io and download CATLIGHT after download extract the file and double click on it to start then it dispay a page to configure you CICD tools(Jenkins | TeamCity | TFS etc.) click on the tool to configure
+
+To before start make sure jenkins is running for configuration purposes and give the jenkins url in the CTALIGHT configuration page when you give the url for the jenkins server CATLIGHT will show the projects which you have in your jenkins and you can select project which you want to get notified.
+
+What is Automated Deployment ?:
+=======-============---------
+ Auto deployement is the process of automating the depplyment of builds.
+Step 1: First we need to start jenkins 
+	go to the jenkins location and run the jenkins.war file
+	java -jar jenkins.war
+step 2: in the browser search for search for "deploy plugin" this plugin takes the war/ear file and deploys that application to a running server either tomcat/Jboss/Glassfish after this you can go to jenkins dashbord -> manage jenkins
+-> under advanced upload the file deploy file that you have downloaded 
+								
+				(or)
+Go to jenkins dashboard -> manage jenkins -> manage jenkins -> under aviable section search for deploy plugin -> click on deploy to contianer plugin and install
+
+step 3: create a job in jenkins that will trigger a build.
+this job should create a war/ear file at the end.
+
+step 4 : we need to configure  some post build action so that the war/ear file will uploaded to the container(deployment container(tomcat/glassFish etc.))
+
+step 5: in the build trigger section we can give the build commands to biuld the proejct so that project can go for some post build actions.
+
+step 5: under post build actions we can chose the option of deploying the WAR file  to the container(which comes only after you have installed the pluguin).
+
+under the post build actions you can chose the war file name sepcificaly or you can give some expression kind of name like **/*.war and the workspace we can give the war file location by going to the jenkins home directory/some worksapce location /your file name(somefilename.war)
+
+After which we have to give the name of the file in context path location of post-build-action location and we have to chose the name of the container can be glassfish or tomcat or any other container
+ and under container chose we have to give the user name, password and the tomcat URL ( we can get url, usename and password from tomcat-users.xml under conf folder under user section)
+
+step 6: go to bin folder of your tomcat directory and run tomcat ./startup.sh
+those tomcat credentials we need to give in the container section of build section apply and save.
+
+step 7: on triggering the build the application will be built after built the application will be deployed to the container.
+
+How to send Email Notifications thorugh jenkins :
+================-===========---=======
+In this section will configure about sending emils from jenkins server as a notifcation with an email.
+
+Manage jenkins ->  configure systems -> under email notification
+ we have to input details like below
+	SMTP server like smtp.gmail.com
+	
+	under advanced 
+	use SMTP authentication checked
+	user name and password
+	use SSL
+	SMTP port 465
+	and the address which you want to sent the mail(test email recipient)
+ 	
+	Test configuration.
+
+If you are having some isse you can configure by allowing less secure apps as ON.
+
+and under post build actions Email notifications add receipients  and check send email for every unstable build.
+
+What is pipeline Jekins :
+=================
+Pipeline - is a workflow with group of events or jobs that are chained and integrated with each other in sequence.
+Every job in a pipeline has some dependency on one or more other jobs and in this continuous delivery of pipe there will be multiple jobs configured and and are notified for the next jobs and for some other post build actions and each pipeline in the pipe has action configured to do.
+
+
+A continuous delivery pipeline has following stages
+  Build -> Deploy -> Test -> Release
+and all of these stages are configured with some build jobs and with notification in the end.
+
+How to setup Delivery Pipeline In Jenkins :
+===============================
+step 1: chain required jobs in sequence(add upstream / downstream jobs)
+chaining a job means adding an upstream or downstream job to the current job.
+
+create three sample jobs
+
+SampleBuildJob
+SampleDeployJob
+SampleTestJob
+
+now is the time for chaining jobs
+
+for the first job SampleBuildJob configure post build actions 
+the job which needs to run after this job
+
+or for the second project  configure build trigger by build after projects are built(after first project(SampleBuildJob))
+
+for third prpject go to build triggers section build project after projects are built and chose the project to be build before this project( ie second project SampleDeployJob) 
+
+Now the three jobs are chained in sequence to run after the other.
+
+step 2: Install delivery pipeline plugin :
+the need for delivery pipeline plugin is for the visulalisation of the delivery of chain of jobs
+
+to install 
+	Manage Jenkins -> Manage Plugins
+	under aviable section type delivery pipeline then download and install the delivery pipeline plugin
+
+step 3: add the delivery pipeline view(configure the view)
+this process is to add the view for the chained jobs for this go to jenkins dashboard and click on + icon on the right
+After naming the view click OK and under components section give the name of the job in initial job box (and name something it),that you want to run first in the 
+chained actions
+
+You can use edit view to customize the fullscreen by checking the number of pipeline instances per pipeline that can be viwed in screen
+
+enable start of new pipeline build - this will enable us to start the build from view itself
+
+Eable rebuild action will allow us to rbuild a particular build without build everything from start so that we can start some build from middle.
+
+what is blue ocean in jenkins ? :
+===============-=------------
+Blue ocean plugin is something where can have some thing interactive with jenkins.
+
+Note : make sure you have jenkins 2.7 or above.
+
+step 1 : go to jenkins dashboard -> manage jenkins -> manage plugins -> search for blue ocean in the avilable section and install after the installation restart jenkins for the blue ocean to work.
+
+step 2: switch to blue ocean view 
+after installation you will get an option at the top saying open blue ocean 
