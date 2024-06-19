@@ -10,4 +10,4 @@ System.out.println("main method incoked");
 main(6);
 }
 }
-~ 
+
